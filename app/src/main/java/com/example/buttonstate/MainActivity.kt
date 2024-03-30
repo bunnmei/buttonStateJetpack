@@ -5,8 +5,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -145,8 +148,12 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 OpeButton.USB -> {
                     usb.value = !usb.value
                 }
-                OpeButton.Clack1 -> TODO()
-                OpeButton.Clack2 -> TODO()
+                OpeButton.Clack1 -> {
+                    println("クラック1がクリックされたよ")
+                }
+                OpeButton.Clack2 -> {
+                    println("クラック2がクリックされたよ")
+                }
                 OpeButton.Clear -> {
                     if (dataState.value == ChartDataState.Saved){
                         stopWatch.value = StopWatchState.Idle
@@ -204,6 +211,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OpeBtn(
     btn: OpeButton,
@@ -229,9 +237,17 @@ fun OpeBtn(
                     color = colorSelect(btn, usb, stopWatchState.value, dataState.value),
                     RoundedCornerShape(50)
                 )
-                .clickable {
-                    click()
-                },
+                .combinedClickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = click,
+                    onLongClick = {
+                        if (btn == OpeButton.Clack1 || btn == OpeButton.Clack2){
+                            println("クラックがながおしされたよ")
+                        }
+                    }
+                ),
+
             contentAlignment = Alignment.Center
         ){
             if (btn.icons.second != null){
